@@ -1,0 +1,58 @@
+Link de Descarga del LoginAEES en Codeigniter en Dropbox
+
+https://www.dropbox.com/s/ik5o3e9xtfsf24c/AdminRolesAEES.rar?dl=0
+
+ ---------------------------------------------------------------------------
+Faltan algunas modificaciones nombres y eso! junto a la base de datos hay que agregarle esto:
+
+1- Se debe de crear una base de datos con el nombre roles_codeigniter.
+luego agregar estas informaciones:
+
+2- la base de datos esta encriptada, por lo tanto se deben de tomar en el codigo desencriptar el password
+
+3- Se genera un token para que no se pueda accesar con con click 'Forward'
+
+----
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Base de datos: `roles_codeigniter`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `perfil` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
+  `username` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  `password` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci AUTO_INCREMENT=4 ;
+
+--
+-- Volcado de datos para la tabla `users`
+--
+
+INSERT INTO `users` (`id`, `perfil`, `username`, `password`) VALUES
+(1, 'administrador', 'frank', sha1('francisco')),
+(2, 'editor', 'genesis', sha1('genesis')),
+(3, 'monitor', 'daniel', sha1('daniel'));
+
+
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
