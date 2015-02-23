@@ -1,4 +1,0 @@
-$mysql_host = "mysql9.000webhost.com";
-$mysql_database = "a4612749_login";
-$mysql_user = "a4612749_gedafr";
-$mysql_password = "elbolsillo02";
