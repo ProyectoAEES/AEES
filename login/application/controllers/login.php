@@ -1,90 +1,94 @@
-
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * Created by Francisco Estrella.
+ * Date: 23/02/15
+ * Time: 18:51
+ */
 class Login extends CI_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+		$this->load->model('login_model');
+		$this->load->library(array('session','form_validation'));
+		$this->load->helper(array('url','form'));
+		$this->load->database('default');
+    }
 	
-	function __construct()
-	{
-		parent::__construct();
-		$this->load->model('login_model');
-		$this->load->helper('form','url');
-		$this->load->library('form_validation');
-		$this->load->model('login_model');
-		$this->load->database('proyecto');
-	}
-
 	public function index()
-	{
-		$this->load->view('login_view');
+	{	
+		switch ($this->session->userdata('perfil')) {
+			case '':
+				$data['token'] = $this->token();
+				$data['titulo'] = 'Login con roles de usuario en codeigniter';
+				$this->load->view('login_view',$data);
+				break;
+			case 'administrador':
+				redirect(base_url().'admin');
+				break;
+			case 'editor':
+				redirect(base_url().'editor');
+				break;	
+			case 'monitor':
+				redirect(base_url().'suscriptor');
+				break;
+			case 'suscriptor': 
+				redirect(base_url().'suscriptor');
+				break;
+			default:		
+				$data['titulo'] = 'Login con roles de usuario en codeigniter';
+				$this->load->view('login_view',$data);
+				break;		
+		}
 	}
-		
-	public function validar()
+	
+	public function token()
 	{
-		$datos = $this->login_model->leer();
-		
-
-		if($datos)
+		$token = md5(uniqid(rand(),true));
+		$this->session->set_userdata('token',$token);
+		return $token;
+	}
+	
+	public function new_user()
+	{
+		if($this->input->post('token') && $this->input->post('token') == $this->session->userdata('token'))
 		{
-				$login_array = array();
-				foreach ($datos as $row ) {
-
-					# code...
-
-					$login_array = array('perfil' => $row->perfil,
-						'username' => $row->username,
-						 'password' => $row->password);
+            $this->form_validation->set_rules('username', 'nombre de usuario', 'required|trim|min_length[2]|max_length[150]|xss_clean');
+            $this->form_validation->set_rules('password', 'password', 'required|trim|min_length[5]|max_length[150]|xss_clean');
+ 
+            //lanzamos mensajes de error si es que los hay
+            $this->form_validation->set_message('required', 'El %s es requerido');
+            $this->form_validation->set_message('min_length', 'El %s debe tener al menos %s carácteres');
+            $this->form_validation->set_message('max_length', 'El %s debe tener al menos %s carácteres');
+			if($this->form_validation->run() == FALSE)
+			{
+				$this->index();
+			}else{
+				$username = $this->input->post('username');
+				$password = md5($this->input->post('password'));
+				$check_user = $this->login_model->login_user($username,$password);
+				if($check_user == TRUE)
+				{
+					$data = array(
+	                'is_logued_in' 	=> 		TRUE,
+	                'id_usuario' 	=> 		$check_user->id,
+	                'perfil'		=>		$check_user->perfil,
+	                'username' 		=> 		$check_user->username,
+	                'password'		=>		$check_user->password,
+	                'email' 		=> 		$check_user->email
+            		);		
+					$this->session->set_userdata($data);
+					$this->index();
 				}
-
-
-		}
-
-		else
-		{
-			echo "ERROR";
-		}
-
-		switch ($login_array['perfil'])
-		{
-			case "admin": 	
-			$this->load->view("front_view");
-			break;
-
-			case "editor":
-			echo "soy el editor";
-			break;
-
-			case "otro":
-			echo "Soy otro";
-
-		}
-		/*if($datos['username'] == $this->input->post('user') & $datos['password'] == $this->input->post('pass') )
-		   {
-		   	switch ($datos['perfil'])
-		{
-			case "admin": 	
-			$this->load->view("front_view");
-			break;
-
-			case "editor":
-			echo "soy el editor";
-			break;
-
-			case "otro":
-			echo "Soy otro";
-
+			}
+		}else{
+			redirect(base_url().'login');
 		}
 	}
-
-	else 
+	public function logout_ci()
 	{
-		echo "Error de usuario y contrase";
-		echo  $datos['username'];
-		
-	}*/
-			
-
+		$this->session->sess_destroy();
+		$this->index();
 	}
 }
 
-?>
